@@ -1,12 +1,14 @@
-"use client"
+"use client";
 import { Button, Navbar, TextInput } from "flowbite-react";
-import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import { AiOutlineSearch } from "react-icons/ai";
+import { FaMoon, FaSun } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 
 function Header() {
-   const path = usePathname();
+  const path = usePathname();
+  const { resolvedTheme, setTheme } = useTheme();
   return (
     <Navbar className="border-b-2">
       <Link
@@ -30,8 +32,13 @@ function Header() {
         <AiOutlineSearch />
       </Button>
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
-          <FaMoon />
+        <Button
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+          pill
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        >
+          {resolvedTheme === "dark" ? <FaSun /> : <FaMoon />}
         </Button>
 
         <Link href="/sign-in">
