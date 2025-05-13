@@ -11,14 +11,7 @@ import { useEffect, useState } from "react";
 function Header() {
   const path = usePathname();
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Avoid rendering theme-dependent elements before hydration
-  if (!mounted) return null;
 
   return (
     <Navbar className="border-b-2">
@@ -57,7 +50,11 @@ function Header() {
         </Button>
 
         <SignedIn>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton
+            appearance={{
+              baseTheme: theme === "light" ? "light" : "dark",
+            }}
+          />
         </SignedIn>
         <SignedOut>
           <Link href="/sign-in">
