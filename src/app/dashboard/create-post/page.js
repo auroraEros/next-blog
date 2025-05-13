@@ -11,7 +11,7 @@ function Page() {
   if (!isLoaded) return null;
 
   if (isSignedIn && user.publicMetadata.isAdmin) {
-   return <CreatePost />;
+    return <CreatePost />;
   } else
     return (
       <div className="py-24 w-full flex flex-col gap-y-8 justify-center items-center">

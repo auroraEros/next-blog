@@ -11,7 +11,9 @@
   "dependencies": {
     "@clerk/nextjs": "^5.7.5",
     "@clerk/themes": "^2.1.42",
-    "firebase": "^11.0.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "browser-image-compression": "^2.0.2",
     "flowbite-react": "^0.10.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.1",
@@ -22,10 +24,13 @@
     "react-dom": "18.3.1",
     "react-icons": "^5.5.0",
     "react-quill-new": "^3.3.3",
-    "svix": "^1.65.0"
+    "react-spinners": "^0.17.0",
+    "svix": "^1.65.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/react": "19.1.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "postcss": "^8",
