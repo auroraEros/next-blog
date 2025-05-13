@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 function ThemeToggle({ children }) {
-  const { resolvedTheme , setTheme } = useTheme();
+  const { theme , setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function ThemeToggle({ children }) {
 
   if (!mounted) return null;
   return (
-    <div className={resolvedTheme }>
+    <div className={theme }>
       <div className="bg-white text-gray-700 dark:bg-[rgb(16,23,42)] dark:text-gray-300 min-h-screen">
         {children}
       </div>

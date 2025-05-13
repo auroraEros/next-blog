@@ -5,10 +5,12 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { dark, light } from "@clerk/themes";
 
 function Header() {
   const path = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   return (
     <Navbar className="border-b-2">
       <Link
@@ -36,17 +38,25 @@ function Header() {
           className="w-12 h-10 hidden sm:inline"
           color="gray"
           pill
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          {resolvedTheme === "dark" ? <FaSun /> : <FaMoon />}
+          {theme === "dark" ? <FaSun /> : <FaMoon />}
         </Button>
 
-        <Link href="/sign-in">
-          <Button gradientDuoTone="purpleToBlue" outline>
-            Sign In
-          </Button>
-        </Link>
-
+        <SignedIn>
+          <UserButton
+            appearance={{
+              baseTheme: theme === "light" ? light : dark,
+            }}
+          />
+        </SignedIn>
+        <SignedOut>
+          <Link href="/sign-in">
+            <Button gradientDuoTone="purpleToBlue" outline>
+              Sign In
+            </Button>
+          </Link>
+        </SignedOut>
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
