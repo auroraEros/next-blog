@@ -1,11 +1,10 @@
 import { connect } from "@/lib/mongodb/mongoose";
 import { currentUser } from "@clerk/nextjs/server";
-import Post from "@/lib/models/post.model"
-
+import Post from "@/lib/models/post.model";
 
 export const POST = async (req) => {
   const user = await currentUser();
-  console.log(user)
+  console.log(user);
   console.log(user.publicMetadata.userMongoId);
 
   try {
@@ -35,6 +34,7 @@ export const POST = async (req) => {
       image: data.image,
       category: data.category,
       slug,
+      clerkId: user.id,
     });
     await newPost.save();
     return new Response(JSON.stringify(newPost), {
