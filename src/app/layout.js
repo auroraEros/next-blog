@@ -1,11 +1,12 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./_components/Header";
 import { ThemeProvider } from "next-themes";
 import { ThemeModeScript } from "flowbite-react";
-import ThemeToggle from "./_components/ThemeToggle";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
+import { ClerkProvider } from "@clerk/nextjs";
+import Header from "./_components/Header";
+import ThemeToggle from "@/app/_components/ThemeToggle";
+import FooterCom from "@/app/_components/FooterCom";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
             <ThemeToggle>
               <Header />
               {children}
+              <FooterCom />
             </ThemeToggle>
           </ThemeProvider>
           <Toaster
