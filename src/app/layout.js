@@ -2,9 +2,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import { ThemeProvider } from "next-themes";
-import { ThemeModeScript } from 'flowbite-react';
+import { ThemeModeScript } from "flowbite-react";
 import ThemeToggle from "./_components/ThemeToggle";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,21 @@ export default function RootLayout({ children }) {
               {children}
             </ThemeToggle>
           </ThemeProvider>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              className: "dark:bg-gray-800 dark:text-gray-100",
+              style: {
+                maxWidth: "500px",
+              },
+              success: {
+                duration: 3000,
+              },
+              error: {
+                duration: 5000,
+              },
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>
