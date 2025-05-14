@@ -9,10 +9,12 @@ import "react-quill-new/dist/quill.snow.css";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { supabase } from "@/supabase";
+import { useUser } from "@clerk/nextjs";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 function CreatePost() {
+   const {user } = useUser();
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
@@ -22,7 +24,7 @@ function CreatePost() {
   const router = useRouter();
 
   const handleUploadImage = async () => {
-    console.log("Upload started");
+  
     setIsUploading(true);
     setImageUploadError(null);
     setImageUploadProgress(0);
@@ -93,11 +95,41 @@ function CreatePost() {
       }, 1000);
     }
   };
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/post/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          userMongoId: user?.publicMetadata?.userMongoId,
+        }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setPublishError(data.message);
+        return;
+      }
+      
+      if (res.ok) {
+        setPublishError(null);
+        router.push(`/post/${data.slug}`);
+      }
+    } catch (error) {
+      setPublishError("Something went wrong");
+    }
+  };
+
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
@@ -128,7 +160,6 @@ function CreatePost() {
             onChange={(e) => {
               const selectedFile = e.target.files?.[0];
               if (selectedFile) {
-                console.log("Selected file:", selectedFile);
                 setFile(selectedFile);
                 setImageUploadError(null);
               }
