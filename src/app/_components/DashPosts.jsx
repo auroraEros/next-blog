@@ -7,6 +7,7 @@ import { useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { Button } from "flowbite-react";
 import Link from "next/link";
+import NoPostYet from "./NoPostYet";
 
 export default function DashPosts() {
   const { user } = useUser();
@@ -56,33 +57,33 @@ export default function DashPosts() {
   if (loading) return <LoadingSpinner size={40} />;
   if (error) return <div>Error: {error}</div>;
 
-  return (
-    <div className="py-6 space-y-6 flex flex-col">
-      <Link href="/dashboard/create-post" className="self-end">
-        <Button gradientDuoTone="purpleToBlue" outline>
-          Create Post
-        </Button>
-      </Link>
-      <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar">
-        {userPosts.length > 0 ? (
-          <PostsTable
-            posts={userPosts}
-            onDeleteClick={(id) => {
-              setPostIdToDelete(id);
-              setShowModal(true);
-            }}
-          />
-        ) : (
-          <p>You have no posts yet!</p>
-        )}
+  if (userPosts.length > 0)
+    return (
+      <div className="py-6 space-y-6 flex flex-col mx-auto">
+        <Link href="/dashboard/create-post" className="self-end">
+          <Button gradientDuoTone="purpleToBlue" outline>
+            Create Post
+          </Button>
+        </Link>
 
-        <DeleteConfirmationModal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          onConfirm={handleDeletePost}
-          isLoading={deleting}
-        />
+        <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+          <div>
+            <PostsTable
+              posts={userPosts}
+              onDeleteClick={(id) => {
+                setPostIdToDelete(id);
+                setShowModal(true);
+              }}
+            />
+            <DeleteConfirmationModal
+              show={showModal}
+              onClose={() => setShowModal(false)}
+              onConfirm={handleDeletePost}
+              isLoading={deleting}
+            />
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  else return <NoPostYet />;
 }

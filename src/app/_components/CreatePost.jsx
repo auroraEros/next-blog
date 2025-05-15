@@ -10,6 +10,7 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { supabase } from "@/supabase";
 import { useUser } from "@clerk/nextjs";
+import { ClipLoader } from "react-spinners";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -22,6 +23,7 @@ export default function CreatePost() {
   const [imageUploadError, setImageUploadError] = useState(null);
   const [publishError, setPublishError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleUploadImage = async () => {
     setIsUploading(true);
@@ -68,11 +70,11 @@ export default function CreatePost() {
 
       setImageUploadProgress(75);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("project-images")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("project-images").getPublicUrl(filePath);
 
-      setFormData(prev => ({ ...prev, image: publicUrl }));
+      setFormData((prev) => ({ ...prev, image: publicUrl }));
       setImageUploadProgress(100);
     } catch (error) {
       setImageUploadError(error.message || "Image upload failed");
@@ -86,6 +88,7 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const res = await fetch("/api/post/create", {
         method: "POST",
@@ -95,16 +98,17 @@ export default function CreatePost() {
           userMongoId: user?.publicMetadata?.userMongoId,
         }),
       });
-      
+
       const data = await res.json();
-      
+
       if (!res.ok) return setPublishError(data.message);
-      
+
       setPublishError(null);
       router.push(`/post/${data.slug}`);
     } catch (error) {
       setPublishError("Something went wrong");
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -118,10 +122,14 @@ export default function CreatePost() {
             required
             id="title"
             className="flex-1"
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
           <Select
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">JavaScript</option>
@@ -186,7 +194,7 @@ export default function CreatePost() {
         />
 
         <Button type="submit" gradientDuoTone="purpleToPink">
-          Publish
+          {isSubmitting ?  <ClipLoader color="#ffffff" size={20} className="mr-2" />:"Publish"}
         </Button>
 
         {publishError && (

@@ -8,8 +8,6 @@ import Header from "./_components/Header";
 import ThemeToggle from "@/app/_components/ThemeToggle";
 import FooterCom from "@/app/_components/FooterCom";
 
-
-
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -37,7 +35,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#6366f1", 
+        },
+      }}
+    >
       <html lang="en" suppressHydrationWarning>
         <head>
           <ThemeModeScript />

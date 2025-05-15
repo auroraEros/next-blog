@@ -5,9 +5,11 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useAuth, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import LoadingSpinner from "./LoadingSpinner";
+import { ClipLoader } from "react-spinners";
 
 function Header() {
   const path = usePathname();
@@ -15,6 +17,7 @@ function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isLoaded } = useAuth();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams);
@@ -24,8 +27,17 @@ function Header() {
     }
   }, [searchParams]);
 
+  if (!isLoaded) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const trimmedSearchTerm = searchTerm.trim();
     if (!trimmedSearchTerm) {
       toast.error("Please enter a search query.", {
@@ -43,24 +55,17 @@ function Header() {
       path === "/search" &&
       searchParams.get("searchTerm") === trimmedSearchTerm
     ) {
-      toast("Showing search results", {
+      toast("Already showing the search results", {
         icon: "🔍",
         position: "top-center",
         duration: 1500,
-       
       });
       return;
     }
     const urlParams = new URLSearchParams(searchParams);
     urlParams.set("searchTerm", trimmedSearchTerm);
     const searchQuery = urlParams.toString();
-    const toastId = toast.loading("Searching", {
-      position: "top-center",
-    });
     router.push(`/search?${searchQuery}`);
-    setTimeout(() => {
-      toast.dismiss(toastId);
-    }, 1000);
   };
 
   return (
@@ -86,6 +91,7 @@ function Header() {
           aria-label="Search articles"
         />
       </form>
+
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>
         <AiOutlineSearch />
       </Button>

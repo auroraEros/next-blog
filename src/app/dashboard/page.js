@@ -1,7 +1,8 @@
 // app/dashboard/page.js
 import Dashboard from "@/app/_components/Dashboard";
 
-export async function generateMetadata({ searchParams }) {
+export async function generateMetadata(props) {
+  const searchParams = await props.searchParams;
   const tab = searchParams?.tab || "dash";
 
   const titles = {

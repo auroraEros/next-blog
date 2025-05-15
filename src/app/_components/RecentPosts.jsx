@@ -11,17 +11,22 @@ async function RecentPosts({ limit }) {
     if (!result.ok) {
       throw new Error("Response not ok");
     }
-    const text = await result.text();
-    const data = JSON.parse(text);
-    posts = data.posts || [];
+    const data = await result.json();
+    posts = Array.isArray(data.posts) ? data.posts : [];
   } catch (error) {
     console.log("Error getting post:", error);
   }
+
   return (
     <div className="flex flex-col justify-center items-center mb-5">
       <h1 className="text-xl mt-5">Recent articles</h1>
       <div className="flex flex-wrap gap-5 mt-5 justify-center">
-        {posts && posts.map((post) => <PostCard key={post._id} post={post} />)}
+        {posts.map((post) => (
+          <PostCard 
+            key={`post-${post._id || post.id || post.title}`} 
+            post={post} 
+          />
+        ))}
       </div>
     </div>
   );

@@ -4,38 +4,43 @@ import CallToAction from "@/app/_components/CallToAction";
 import RecentPosts from "@/app/_components/RecentPosts";
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const result = await fetch(`${process.env.URL}/api/post/get`, {
-    method: "POST",
-    body: JSON.stringify({ slug }),
-  });
-  const data = await result.json();
-  const post = data.posts[0] || {};
-
-  return {
-    title: `${post.title || "Post"}`,
-    description: post.content
-      ? `${post.content.substring(0, 100)}...`
-      : "Blog post on Sahar-Blog",
-  };
+  const { slug } = params;
+  try {
+    const result = await fetch(`${process.env.URL}/api/post/get`, {
+      method: "POST",
+      body: JSON.stringify({ slug }),
+    });
+    const data = await result.json();
+    const post = JSON.parse(JSON.stringify(data.posts?.[0] || {}));
+    return {
+      title: `${post.title || "Post"} | Sahar-Blog`,
+      description: post.content?.substring(0, 100) || "Blog post on Sahar-Blog",
+    };
+  } catch (error) {
+    return {
+      title: "Post | Sahar-Blog",
+      description: "Blog post on Sahar-Blog",
+    };
+  }
 }
 
 async function Page({ params }) {
-  const { slug } = await params;
+  const { slug } = params;
   let post = null;
+
   try {
-    const result = await fetch(process.env.URL + "/api/post/get", {
+    const result = await fetch(`${process.env.URL}/api/post/get`, {
       method: "POST",
-      body: JSON.stringify({ slug: slug }),
+      body: JSON.stringify({ slug }),
       cache: "no-store",
     });
     const data = await result.json();
-    console.log(data);
-    post = data.posts[0];
+    post = JSON.parse(JSON.stringify(data.posts?.[0]));
   } catch (error) {
     post = { title: "Failed to load post" };
   }
-  if (!post || !post.title === "Failed to load post") {
+
+  if (!post || post.title === "Failed to load post") {
     return (
       <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
         <h2 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">

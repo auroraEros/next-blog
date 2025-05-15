@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingSpinner from "./LoadingSpinner";
 import PostCard from "./PostCard";
 
 
@@ -13,7 +14,7 @@ export default function PostsResults({ loading, posts, showMore, handleShowMore 
         {!loading && posts.length === 0 && (
           <p className="text-xl text-gray-500">No posts found.</p>
         )}
-        {loading && <p className="text-xl text-gray-500">Loading...</p>}
+        {loading && <LoadingSpinner/>}
         {!loading &&
           posts.map((post) => <PostCard key={post._id} post={post} />)}
         {showMore && (
