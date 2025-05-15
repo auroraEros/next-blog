@@ -3,6 +3,23 @@ import { Button } from "flowbite-react";
 import CallToAction from "@/app/_components/CallToAction";
 import RecentPosts from "@/app/_components/RecentPosts";
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const result = await fetch(`${process.env.URL}/api/post/get`, {
+    method: "POST",
+    body: JSON.stringify({ slug }),
+  });
+  const data = await result.json();
+  const post = data.posts[0] || {};
+
+  return {
+    title: `${post.title || "Post"}`,
+    description: post.content
+      ? `${post.content.substring(0, 100)}...`
+      : "Blog post on Sahar-Blog",
+  };
+}
+
 async function Page({ params }) {
   const { slug } = await params;
   let post = null;

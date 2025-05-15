@@ -13,18 +13,17 @@ import { useUser } from "@clerk/nextjs";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-function CreatePost() {
-   const {user } = useUser();
+export default function CreatePost() {
+  const { user } = useUser();
+  const router = useRouter();
   const [file, setFile] = useState(null);
+  const [formData, setFormData] = useState({});
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
-  const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const router = useRouter();
 
   const handleUploadImage = async () => {
-  
     setIsUploading(true);
     setImageUploadError(null);
     setImageUploadProgress(0);
@@ -36,7 +35,6 @@ function CreatePost() {
         return;
       }
 
-      // Validate file type and size
       if (!file.type.match("image/.*")) {
         setImageUploadError("Only image files are allowed");
         setIsUploading(false);
@@ -49,20 +47,16 @@ function CreatePost() {
         return;
       }
 
-      // Compress image
       const options = {
         maxSizeMB: 1,
         maxWidthOrHeight: 1024,
         useWebWorker: true,
-        onProgress: (progress) => {
-          setImageUploadProgress(Math.round(progress));
-        },
+        onProgress: (progress) => setImageUploadProgress(Math.round(progress)),
       };
 
       const compressedFile = await imageCompression(file, options);
       setImageUploadProgress(50);
 
-      // Upload to Supabase
       const fileName = `${uuidv4()}.${compressedFile.type.split("/")[1]}`;
       const filePath = `images/${fileName}`;
 
@@ -70,23 +64,17 @@ function CreatePost() {
         .from("project-images")
         .upload(filePath, compressedFile);
 
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw new Error(uploadError.message);
-      }
+      if (uploadError) throw new Error(uploadError.message);
 
       setImageUploadProgress(75);
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("project-images").getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from("project-images")
+        .getPublicUrl(filePath);
 
-      setFormData((prev) => ({ ...prev, image: publicUrl }));
+      setFormData(prev => ({ ...prev, image: publicUrl }));
       setImageUploadProgress(100);
-      setImageUploadError(null);
     } catch (error) {
-      console.error("Upload failed:", error);
       setImageUploadError(error.message || "Image upload failed");
     } finally {
       setTimeout(() => {
@@ -95,14 +83,13 @@ function CreatePost() {
       }, 1000);
     }
   };
-const handleSubmit = async (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch("/api/post/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           userMongoId: user?.publicMetadata?.userMongoId,
@@ -111,20 +98,14 @@ const handleSubmit = async (e) => {
       
       const data = await res.json();
       
-      if (!res.ok) {
-        setPublishError(data.message);
-        return;
-      }
+      if (!res.ok) return setPublishError(data.message);
       
-      if (res.ok) {
-        setPublishError(null);
-        router.push(`/post/${data.slug}`);
-      }
+      setPublishError(null);
+      router.push(`/post/${data.slug}`);
     } catch (error) {
       setPublishError("Something went wrong");
     }
   };
-
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
@@ -137,14 +118,10 @@ const handleSubmit = async (e) => {
             required
             id="title"
             className="flex-1"
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <Select
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">JavaScript</option>
@@ -205,9 +182,7 @@ const handleSubmit = async (e) => {
           placeholder="Write something..."
           className="h-72 mb-12"
           required
-          onChange={(value) => {
-            setFormData({ ...formData, content: value });
-          }}
+          onChange={(value) => setFormData({ ...formData, content: value })}
         />
 
         <Button type="submit" gradientDuoTone="purpleToPink">
@@ -223,5 +198,3 @@ const handleSubmit = async (e) => {
     </div>
   );
 }
-
-export default CreatePost;
