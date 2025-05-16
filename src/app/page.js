@@ -7,6 +7,7 @@ export default async function Home() {
   try {
     const result = await fetch(process.env.URL + "/api/post/get", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ limit: 9, order: "desc" }),
       cache: "no-store",
     });

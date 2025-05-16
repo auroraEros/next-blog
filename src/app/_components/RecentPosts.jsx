@@ -5,6 +5,7 @@ async function RecentPosts({ limit }) {
   try {
     const result = await fetch(process.env.URL + "/api/post/get", {
       method: "POST",
+       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ limit: limit, order: "desc" }),
       cache: "no-store",
     });

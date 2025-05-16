@@ -31,6 +31,7 @@ async function Page({ params }) {
   try {
     const result = await fetch(`${process.env.URL}/api/post/get`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug }),
       cache: "no-store",
     });
