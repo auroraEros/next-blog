@@ -59,7 +59,7 @@ function FooterCom() {
                   Github
                 </Footer.Link>
                 <Footer.Link
-                  href="https://www.linkedin.com/in/sahar-javadi-7000b2214/"
+                  href="https://www.linkedin.com/in/sahar-javadi/"
                   target="_blank"
                 >
                   LinkedIn
